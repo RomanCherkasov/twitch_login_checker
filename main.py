@@ -5,17 +5,15 @@ def token_input(tokens_file: str) -> list:
     tokens = []
     with open(tokens_file) as proxy_list:
         for line in proxy_list:
-            tokens.append(line[:-1])
+            tokens.append(({'Authorization': f'Bearer {line[:-1]}'}, line[:-1]))
     return(tokens)
 
 def token_output(token_list: list):
-    for token in token_list:
-        a = str(token)
-        headers = {'Authorization': f'Bearer {a}'}
-        res = requests.get(endpoint, headers=headers)
+    for element in token_list:
+        res = requests.get(endpoint, headers=element[0])
         login = res.json().get('login')
         with open('output.txt', 'a') as output_file:
-            output_file.write(f'{token} : {login}\n')
+            output_file.write(f'{element[1]} : {login}\n')
 
 tokens = token_input('tokens.txt')
 token_output(tokens)
